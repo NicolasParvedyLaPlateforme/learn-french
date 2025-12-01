@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+/* --- 1. Définition des Variables (Theming) --- */
+:root {
+  /* Fond et Texte de base (Lecture facile) */
+  --background: #f8fafc; /* Slate-50: Plus doux que le blanc pur */
+  --foreground: #0f172a; /* Slate-900: Contraste élevé pour la lecture */
+
+  /* Couleurs de la Marque (Bleu Français moderne) */
+  --color-primary: #3b82f6; /* Blue-500 */
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #6366f1; /* Indigo-500 */
+  --color-secondary-foreground: #ffffff;
+
+  /* Feedback d'Apprentissage (Essentiel pour une app de langue) */
+  --color-success: #22c55e; /* Green-500: Bonne réponse */
+  --color-success-foreground: #ffffff;
+  --color-error: #ef4444; /* Red-500: Mauvaise réponse */
+  --color-error-foreground: #ffffff;
+  --color-warning: #f59e0b; /* Amber-500: Indice / Attention */
+
+  /* Gamification (Streak, XP, Badges) */
+  --color-gold: #fbbf24; /* Amber-400 */
+  
+  /* UI Elements (Cartes, Inputs) */
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-muted: #f1f5f9; /* Slate-100 */
+  --color-muted-foreground: #64748b; /* Slate-500 */
+  --color-border: #e2e8f0; /* Slate-200 */
+
+  /* Rayons de bordure (Arrondis = Convivial) */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+/* --- 2. Dark Mode --- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #020617; /* Slate-950 */
+    --foreground: #f8fafc; /* Slate-50 */
+
+    --color-primary: #60a5fa; /* Blue-400 */
+    --color-primary-foreground: #0f172a;
+    
+    --color-success: #4ade80; /* Green-400 */
+    --color-success-foreground: #020617;
+    
+    --color-error: #f87171; /* Red-400 */
+    --color-error-foreground: #020617;
+
+    --color-card: #0f172a;
+    --color-card-foreground: #f8fafc;
+    --color-muted: #1e293b;
+    --color-muted-foreground: #94a3b8;
+    --color-border: #1e293b;
+  }
+}
+
+/* --- 3. Configuration du Thème Tailwind v4 --- */
+@theme inline {
+  /* Extension des couleurs */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-primary: var(--color-primary);
+  --color-primary-fg: var(--color-primary-foreground);
+  
+  --color-success: var(--color-success);
+  --color-success-fg: var(--color-success-foreground);
+  
+  --color-error: var(--color-error);
+  --color-error-fg: var(--color-error-foreground);
+  
+  --color-gold: var(--color-gold);
+
+  --color-card: var(--color-card);
+  --color-card-fg: var(--color-card-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-fg: var(--color-muted-foreground);
+  --color-border: var(--color-border);
+
+  /* Rayons personnalisés */
+  --radius-card: var(--radius-xl);
+  --radius-btn: var(--radius-md);
+
+  /* Animations personnalisées pour l'apprentissage */
+  --animate-shake: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  --animate-pop: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --animate-flip: flip 0.6s ease-in-out;
+
+  /* Fonts */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Keyframes */
+  @keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+  }
+  @keyframes pop {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+}
+
+/* --- 4. Styles Globaux et Utilitaires --- */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  /* Amélioration du rendu du texte pour la lecture */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Utilitaire pour masquer la scrollbar mais garder le scroll (utile pour les listes de leçons) */
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Effet de verre (Glassmorphism) pour les entêtes ou overlays */
+@utility glass {
+  background: color-mix(in srgb, var(--background) 70%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+/* Style de base pour une Flashcard (perspective 3D) */
+@utility flashcard-container {
+  perspective: 1000px;
+}

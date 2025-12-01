@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "word_en": "Cat",
+    "word_fr": "Chat",
+    "equivalents": [
+      "Minou",
+      "Félin"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  },
+  {
+    "id": 2,
+    "word_en": "Dog",
+    "word_fr": "Chien",
+    "equivalents": [
+      "Toutou",
+      "Clebs"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  },
+  {
+    "id": 3,
+    "word_en": "Car",
+    "word_fr": "Voiture",
+    "equivalents": [
+      "Auto",
+      "Automobile",
+      "Véhicule"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  },
+  {
+    "id": 4,
+    "word_en": "Hello",
+    "word_fr": "Bonjour",
+    "equivalents": [
+      "Salut",
+      "Coucou",
+      "Bonsoir"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  },
+  {
+    "id": 5,
+    "word_en": "Mother",
+    "word_fr": "Mère",
+    "equivalents": [
+      "Maman",
+      "Darone"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  },
+  {
+    "id": 6,
+    "word_en": "Father",
+    "word_fr": "Père",
+    "equivalents": [
+      "Papa",
+      "Daron"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  },
+  {
+    "id": 7,
+    "word_en": "Book",
+    "word_fr": "Livre",
+    "equivalents": [
+      "Bouquin",
+      "Roman",
+      "Manuel"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  },
+  {
+    "id": 8,
+    "word_en": "Woman",
+    "word_fr": "Femme",
+    "equivalents": [
+      "Dame",
+      "Madame",
+      "Fille"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  },
+  {
+    "id": 9,
+    "word_en": "Man",
+    "word_fr": "Homme",
+    "equivalents": [
+      "Monsieur",
+      "Garçon",
+      "Mec"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  },
+  {
+    "id": 10,
+    "word_en": "House",
+    "word_fr": "Maison",
+    "equivalents": [
+      "Logement",
+      "Domicile",
+      "Chez-moi"
+    ],
+    "score_perfect": 0,
+    "score_equivalent": 0,
+    "score_close": 0
+  }
+]
