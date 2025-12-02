@@ -46,6 +46,10 @@ export default function TypeAndFind() {
     }else if (inputToFind.toLocaleLowerCase().includes(randomWord.word_fr.toLocaleLowerCase().slice(0, randomWord.word_fr.length - 2))){
       //Si il ne reste plus que deux lettres à deviner alors on affiche un message "on est proche"
       setMessageRes("On est proche !");
+    }else if (randomWord.equivalents.includes(inputToFind.toLocaleLowerCase())){
+      setMessageRes("On a trouvé un mot équivalent, le bon mot était : " + randomWord.word_fr)
+      setResult(true);
+      setInputToFind("");
     }else {
       setMessageRes("");
     }

@@ -4,8 +4,8 @@
     "word_en": "Cat",
     "word_fr": "Chat",
     "equivalents": [
-      "Minou",
-      "Félin"
+      "minou",
+      "félin"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
@@ -16,8 +16,8 @@
     "word_en": "Dog",
     "word_fr": "Chien",
     "equivalents": [
-      "Toutou",
-      "Clebs"
+      "toutou",
+      "clebs"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
@@ -28,9 +28,9 @@
     "word_en": "Car",
     "word_fr": "Voiture",
     "equivalents": [
-      "Auto",
-      "Automobile",
-      "Véhicule"
+      "auto",
+      "automobile",
+      "véhicule"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
@@ -41,9 +41,9 @@
     "word_en": "Hello",
     "word_fr": "Bonjour",
     "equivalents": [
-      "Salut",
-      "Coucou",
-      "Bonsoir"
+      "salut",
+      "coucou",
+      "bonsoir"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
@@ -51,11 +51,11 @@
   },
   {
     "id": 5,
-    "word_en": "Mother",
-    "word_fr": "Mère",
+    "word_en": "mother",
+    "word_fr": "mère",
     "equivalents": [
-      "Maman",
-      "Darone"
+      "maman",
+      "darone"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
@@ -66,8 +66,8 @@
     "word_en": "Father",
     "word_fr": "Père",
     "equivalents": [
-      "Papa",
-      "Daron"
+      "papa",
+      "daron"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
@@ -78,9 +78,9 @@
     "word_en": "Book",
     "word_fr": "Livre",
     "equivalents": [
-      "Bouquin",
-      "Roman",
-      "Manuel"
+      "bouquin",
+      "roman",
+      "manuel"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
@@ -91,9 +91,9 @@
     "word_en": "Woman",
     "word_fr": "Femme",
     "equivalents": [
-      "Dame",
-      "Madame",
-      "Fille"
+      "dame",
+      "madame",
+      "fille"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
@@ -104,9 +104,9 @@
     "word_en": "Man",
     "word_fr": "Homme",
     "equivalents": [
-      "Monsieur",
-      "Garçon",
-      "Mec"
+      "monsieur",
+      "garçon",
+      "mec"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
@@ -117,9 +117,9 @@
     "word_en": "House",
     "word_fr": "Maison",
     "equivalents": [
-      "Logement",
-      "Domicile",
-      "Chez-moi"
+      "logement",
+      "domicile",
+      "chez-moi"
     ],
     "score_perfect": 0,
     "score_equivalent": 0,
