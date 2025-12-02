@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { getRandomInt } from '@/tools/math';
-import { isAnagram, isCloseMatch } from './functions';
+import { isAnagram, isCloseMatch, normalize } from './functions';
 import Header from './components/Header';
 import PromptTranslate from './components/PromptTranslate';
 import { useCallback } from 'react';
@@ -56,46 +56,48 @@ export default function TypeAndFind() {
         }
       );
   }, [pickNewWord])
-  
-  // useEffect(() => { //obsolète
-  //   // On ne fait rien si le tableau est vide
-  //   if (vocabulary.length === 0 || !result) return;
-
-  //   let newArrayWithoutWord = vocabulary.filter((w) => w.word_en != currentWord?.word_en)
-
-  //   //si le mot est le même que le précédent alors faut le changer
-  //   setCurrentWord(newArrayWithoutWord[getRandomInt(0, newArrayWithoutWord.length)])
-  //   setResult(false);
-  // }, [result, vocabulary])
 
   const validateInput = (value: string, target: RandomWord) => {
 
-    value = value.toLocaleLowerCase();
+    let val = value.toLocaleLowerCase();
     let word_fr = target.word_fr.toLowerCase();
 
     // 1. Victoire exacte
-    if (value === word_fr) {
+    if (val === word_fr) {
       handleSuccess("Good !");
       return;
     }
 
-     if (isCloseMatch(value, word_fr)){
-      //Si il ne reste plus que deux lettres à deviner alors on affiche un message "on est proche"
-      setMessage("You are almost !");
-      setStatus('close')
+    // 2. Synonyme / Équivalent
+    if (target.equivalents.some(eq => normalize(eq) === val)) {
+      handleSuccess(`It is another word, the good answer was: ${target.word_fr}`, 'equivalent');
+      return;
+    }
 
-      if (isAnagram(value, word_fr)){
-        setMessage(message + " But they have a little mistake !")
+    // 3. Cas "Proche" (Anagramme ou début similaire)
+    let feedback = "";
+    let isClose = false;
+
+    if (isCloseMatch(value, target.word_fr)) {
+      feedback = "You are close!";
+      isClose = true;
+      
+      // Sous-cas : Anagramme partiel dans le "close"
+      if (isAnagram(value, target.word_fr)) {
+         feedback += " But there is a little mistake!";
       }
-    }else if (target.equivalents.includes(value)){
-      setMessage("It is another word, the good answer was : " + word_fr)
-      setStatus('close')
-      setInput("");
-    }else if (isAnagram(value, word_fr)){
-      setMessage("Ah ! You are near, you can do it !")
-      setStatus('close')
-    }else {
+    } else if (isAnagram(value, target.word_fr)) {
+      feedback = "Ah! You are near, you can do it!";
+      isClose = true;
+    }
+
+    // Mise à jour du feedback UI
+    if (isClose) {
+      setMessage(feedback);
+      setStatus('close');
+    } else {
       setMessage("");
+      setStatus('neutral');
     }
   }
 
