@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { getRandomInt } from '@/tools/math';
+import { isAnagram, isCloseMatch } from './functions';
 
 interface RandomWord {
   id: number,
@@ -11,23 +12,6 @@ interface RandomWord {
   score_equivalent: number,
   score_close: number
 }
-
-// Normalise une chaîne (minuscule, trim) pour les comparaisons
-const normalize = (str: string) => str.trim().toLowerCase();
-
-// Vérifie si deux mots sont des anagrammes (mêmes lettres)
-const isAnagram = (str1: string, str2: string) => {
-  const s1 = normalize(str1).split('').sort().join('');
-  const s2 = normalize(str2).split('').sort().join('');
-  return s1 === s2;
-};
-
-// Vérifie si l'input contient le début du mot (sauf les 2 dernières lettres)
-const isCloseMatch = (input: string, target: string) => {
-  if (target.length <= 2) return false;
-  const root = normalize(target).slice(0, -2);
-  return normalize(input).includes(root);
-};
 
 export default function TypeAndFind() {
   const [inputToFind, setInputToFind] = useState("");
