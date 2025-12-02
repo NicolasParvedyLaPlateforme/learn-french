@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { getRandomInt } from '@/tools/math';
 import { isAnagram, isCloseMatch } from './functions';
+import Header from './components/Header';
+import PromptTranslate from './components/PromptTranslate';
 
 interface RandomWord {
   id: number,
@@ -92,26 +94,13 @@ export default function TypeAndFind() {
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background transition-colors duration-300">
 
       {/* En-tête de la page */}
-      <header className="mb-8 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          <span className="text-primary">Learn</span> French
-        </h1>
-        <p className="text-muted-fg text-sm mt-2">Leçon 1 : Vocabulaire de base</p>
-      </header>
+      <Header />
 
       {/* Carte principale de l'exercice */}
       <main className="w-full max-w-md bg-card border border-border rounded-card shadow-sm p-8 flex flex-col items-center">
 
         {/* Zone du mot à traduire (Prompt) */}
-        <div className="w-full text-center mb-10">
-          <span className="text-xs font-bold tracking-widest text-muted-fg uppercase mb-3 block">
-            Traduisez en français
-          </span>
-          {/* J'ai mis "Apple" en dur pour l'exemple visuel */}
-          <div className="text-5xl font-extrabold text-foreground drop-shadow-sm">
-            {randomWord.word_en}
-          </div>
-        </div>
+        <PromptTranslate word_en={randomWord.word_en} />
 
         {/* Zone de saisie (Input) */}
         <div className="w-full group">
