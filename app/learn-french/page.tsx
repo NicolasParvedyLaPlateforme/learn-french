@@ -16,20 +16,40 @@ export default function TypeAndFind() {
   const [inputToFind, setInputToFind] = useState("");
   const [tableaudemotA1, setTableaudemotA1] = useState<RandomWord[]>([]);
   const [randomWord, setRandomWord] = useState<RandomWord>();
-  const [result, setResult] = useState(false);
+  const [result, setResult] = useState(true);
+  const [messageRes, setMessageRes] = useState("");
 
   useEffect(() => {
-    fetch('http://localhost:3000/tableaudemotA1.json')
+    fetch('/tableaudemotA1.json')
       .then((res) => res.json())
       .then(res => setTableaudemotA1(res));
   }, [])
   
   useEffect(() => {
     // On ne fait rien si le tableau est vide
-    if (tableaudemotA1.length === 0) return;
-
+    if (tableaudemotA1.length === 0 || !result) return;
+    
     setRandomWord(tableaudemotA1[getRandomInt(0, tableaudemotA1.length)])
+    setResult(false);
   }, [result, tableaudemotA1])
+
+  useEffect(() => {
+    if (inputToFind == "" || randomWord == undefined) return;
+
+    //On vérifie si le mot correspond au mot à trouver 
+    if (inputToFind.toLocaleLowerCase() == randomWord.word_fr.toLocaleLowerCase()){
+      
+      //Si c'est le cas alors on valide le result et on passe à true, on vide le champ et on met un message de félicitation
+      setResult(true);
+      setInputToFind("");
+      setMessageRes("Bravo !")
+    }else if (inputToFind.toLocaleLowerCase().includes(randomWord.word_fr.toLocaleLowerCase().slice(0, randomWord.word_fr.length - 2))){
+      //Si il ne reste plus que deux lettres à deviner alors on affiche un message "on est proche"
+      setMessageRes("On est proche !");
+    }else {
+      setMessageRes("");
+    }
+  }, [inputToFind])
 
   // GESTION DU LOADING
   // Si le tableau est null OU que le mot n'est pas encore choisi
@@ -97,6 +117,7 @@ export default function TypeAndFind() {
           {/* Tu pourras conditionner la classe (text-warning, text-error) selon la proximité */}
           <p className="text-sm font-semibold text-warning animate-shake">
             {/* Insère ton message de proximité ici, ex: "Tu chauffes..." */}
+            {messageRes}
           </p>
         </div>
 
