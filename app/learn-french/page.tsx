@@ -4,6 +4,7 @@ import { getRandomInt } from '@/tools/math';
 import { isAnagram, isCloseMatch } from './functions';
 import Header from './components/Header';
 import PromptTranslate from './components/PromptTranslate';
+import { useCallback } from 'react';
 
 interface RandomWord {
   id: number,
@@ -15,80 +16,129 @@ interface RandomWord {
   score_close: number
 }
 
-export default function TypeAndFind() {
-  const [inputToFind, setInputToFind] = useState("");
-  const [tableaudemotA1, setTableaudemotA1] = useState<RandomWord[]>([]);
-  const [randomWord, setRandomWord] = useState<RandomWord | null>(null);
-  const [result, setResult] = useState(true);
-  const [messageRes, setMessageRes] = useState("");
+// État du feedback pour gérer la couleur du texte ou les animations
+type FeedbackStatus = 'neutral' | 'close' | 'success' | 'equivalent';
 
+export default function TypeAndFind() {
+  const [input, setInput] = useState("");
+  const [vocabulary, setVocabulary] = useState<RandomWord[]>([]);
+  const [currentWord, setCurrentWord] = useState<RandomWord | null>(null);
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<FeedbackStatus>('neutral');
+  const [isLoading, setIsLoading] = useState(true);
+
+  //LOGIQUE 
+
+  // Choisir un nouveau mot (exclut le mot actuel pour éviter la répétition immédiate)
+  const pickNewWord = useCallback((list: RandomWord[], current?: RandomWord | null) => {
+    if (list.length === 0) return;
+    
+    //Si current vaut null alors candidates vaut list sinon elle filtre en soustrant le mot actuel
+    const candidates = current 
+      ? list.filter((w) => w.word_en !== current.word_en) 
+      : list;
+
+    const nextWord = candidates[getRandomInt(0, candidates.length)];
+    setCurrentWord(nextWord);
+    setInput("");
+    setMessage("");
+    setStatus('neutral');
+  }, []);
+
+  //Chargement initial
   useEffect(() => {
     fetch('/tableaudemotA1.json')
       .then((res) => res.json())
-      .then(res => setTableaudemotA1(res));
-  }, [])
+      .then(res => {
+          setVocabulary(res)
+          pickNewWord(res, null);
+          setIsLoading(false);
+        }
+      );
+  }, [pickNewWord])
   
-  useEffect(() => {
-    // On ne fait rien si le tableau est vide
-    if (tableaudemotA1.length === 0 || !result) return;
+  // useEffect(() => { //obsolète
+  //   // On ne fait rien si le tableau est vide
+  //   if (vocabulary.length === 0 || !result) return;
 
-    let newArrayWithoutWord = tableaudemotA1.filter((w) => w.word_en != randomWord?.word_en)
+  //   let newArrayWithoutWord = vocabulary.filter((w) => w.word_en != currentWord?.word_en)
 
-    //si le mot est le même que le précédent alors faut le changer
-    setRandomWord(newArrayWithoutWord[getRandomInt(0, newArrayWithoutWord.length)])
-    setResult(false);
-  }, [result, tableaudemotA1])
+  //   //si le mot est le même que le précédent alors faut le changer
+  //   setCurrentWord(newArrayWithoutWord[getRandomInt(0, newArrayWithoutWord.length)])
+  //   setResult(false);
+  // }, [result, vocabulary])
 
   const validateInput = (value: string, target: RandomWord) => {
-    if (value == "" || randomWord == undefined) return;
 
     value = value.toLocaleLowerCase();
-    let word_fr = randomWord.word_fr.toLowerCase();
+    let word_fr = target.word_fr.toLowerCase();
 
-    //On vérifie si le mot correspond au mot à trouver 
-    if (value == word_fr){
-      
-      //Si c'est le cas alors on valide le result et on passe à true, on vide le champ et on met un message de félicitation
-      setResult(true);
-      setInputToFind("");
-      setMessageRes("Good !")
-    }else if (isCloseMatch(value, word_fr)){
+    // 1. Victoire exacte
+    if (value === word_fr) {
+      handleSuccess("Good !");
+      return;
+    }
+
+     if (isCloseMatch(value, word_fr)){
       //Si il ne reste plus que deux lettres à deviner alors on affiche un message "on est proche"
-      setMessageRes("You are almost !");
+      setMessage("You are almost !");
+      setStatus('close')
 
       if (isAnagram(value, word_fr)){
-        setMessageRes(messageRes + " But they have a little mistake !")
+        setMessage(message + " But they have a little mistake !")
       }
-    }else if (randomWord.equivalents.includes(value)){
-      setMessageRes("It is another word, the good answer was : " + word_fr)
-      setResult(true);
-      setInputToFind("");
+    }else if (target.equivalents.includes(value)){
+      setMessage("It is another word, the good answer was : " + word_fr)
+      setStatus('close')
+      setInput("");
     }else if (isAnagram(value, word_fr)){
-      setMessageRes("Ah ! You are near, you can do it !")
+      setMessage("Ah ! You are near, you can do it !")
+      setStatus('close')
     }else {
-      setMessageRes("");
+      setMessage("");
     }
   }
+
+  // Gestion de la victoire
+  const handleSuccess = (msg: string, type: FeedbackStatus = 'success') => {
+    setMessage(msg);
+    setStatus(type);
+    
+    // Petit délai pour laisser l'utilisateur lire "Bravo" avant de changer
+    setTimeout(() => {
+      pickNewWord(vocabulary, currentWord);
+    }, 800); 
+  };
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
 
-    setInputToFind(val);
+    setInput(val);
 
-    if (randomWord){
-      validateInput(val, randomWord);
+    if (currentWord){
+      validateInput(val, currentWord);
     }
   }
-
+  
+  // --- RENDU ---
   // GESTION DU LOADING
-  // Si le tableau est null OU que le mot n'est pas encore choisi
-  if (!tableaudemotA1 || !randomWord) {
+  if (isLoading || !currentWord) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="animate-pulse">Chargement du vocabulaire...</p>
       </div>
     );
   }
+
+  // Helper pour les couleurs de message
+  const getMessageColor = () => {
+    switch (status) {
+      case 'success': return 'text-green-600';
+      case 'equivalent': return 'text-blue-600';
+      case 'close': return 'text-orange-500 animate-pulse'; // ou ta classe warning
+      default: return 'text-muted-foreground';
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background transition-colors duration-300">
@@ -100,29 +150,27 @@ export default function TypeAndFind() {
       <main className="w-full max-w-md bg-card border border-border rounded-card shadow-sm p-8 flex flex-col items-center">
 
         {/* Zone du mot à traduire (Prompt) */}
-        <PromptTranslate word_en={randomWord.word_en} />
+        <PromptTranslate word_en={currentWord.word_en} />
 
         {/* Zone de saisie (Input) */}
         <div className="w-full group">
           <input
             type="text"
-            value={inputToFind}
+            value={input}
             onChange={handleChangeInput}
             placeholder="Tapez ici..."
             autoFocus
             spellCheck="false"
-            className="
-          w-full 
-          bg-muted/50 hover:bg-muted/80 focus:bg-background
-          text-foreground placeholder:text-muted-fg/50
-          border-2 border-transparent focus:border-primary
-          rounded-xl 
-          py-4 px-6 
-          text-center text-2xl font-medium 
-          outline-none 
-          transition-all duration-200 
-          shadow-sm focus:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1)]
-        "
+            className={`
+              w-full 
+              bg-muted/50 hover:bg-muted/80 focus:bg-background
+              text-foreground placeholder:text-muted-foreground/50
+              border-2 rounded-xl py-4 px-6 
+              text-center text-2xl font-medium outline-none 
+              transition-all duration-200 
+              shadow-sm focus:shadow-lg
+              ${status === 'success' ? 'border-green-500' : 'border-transparent focus:border-primary'}
+            `}
           />
         </div>
 
@@ -131,9 +179,9 @@ export default function TypeAndFind() {
         <div className="h-8 mt-4 flex items-center justify-center w-full">
           {/* Exemple de structure pour le message (vide par défaut) */}
           {/* Tu pourras conditionner la classe (text-warning, text-error) selon la proximité */}
-          <p className="text-sm font-semibold text-warning animate-shake">
+          <p className={`text-sm font-semibold transition-all duration-300 ${getMessageColor()}`}>
             {/* Insère ton message de proximité ici, ex: "Tu chauffes..." */}
-            {messageRes}
+            {message}
           </p>
         </div>
 
