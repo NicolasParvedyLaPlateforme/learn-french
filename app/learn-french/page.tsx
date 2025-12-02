@@ -12,10 +12,27 @@ interface RandomWord {
   score_close: number
 }
 
+// Normalise une chaîne (minuscule, trim) pour les comparaisons
+const normalize = (str: string) => str.trim().toLowerCase();
+
+// Vérifie si deux mots sont des anagrammes (mêmes lettres)
+const isAnagram = (str1: string, str2: string) => {
+  const s1 = normalize(str1).split('').sort().join('');
+  const s2 = normalize(str2).split('').sort().join('');
+  return s1 === s2;
+};
+
+// Vérifie si l'input contient le début du mot (sauf les 2 dernières lettres)
+const isCloseMatch = (input: string, target: string) => {
+  if (target.length <= 2) return false;
+  const root = normalize(target).slice(0, -2);
+  return normalize(input).includes(root);
+};
+
 export default function TypeAndFind() {
   const [inputToFind, setInputToFind] = useState("");
   const [tableaudemotA1, setTableaudemotA1] = useState<RandomWord[]>([]);
-  const [randomWord, setRandomWord] = useState<RandomWord>();
+  const [randomWord, setRandomWord] = useState<RandomWord | null>(null);
   const [result, setResult] = useState(true);
   const [messageRes, setMessageRes] = useState("");
 
@@ -28,38 +45,54 @@ export default function TypeAndFind() {
   useEffect(() => {
     // On ne fait rien si le tableau est vide
     if (tableaudemotA1.length === 0 || !result) return;
-    
-    setRandomWord(tableaudemotA1[getRandomInt(0, tableaudemotA1.length)])
+
+    let newArrayWithoutWord = tableaudemotA1.filter((w) => w.word_en != randomWord?.word_en)
+
+    //si le mot est le même que le précédent alors faut le changer
+    setRandomWord(newArrayWithoutWord[getRandomInt(0, newArrayWithoutWord.length)])
     setResult(false);
   }, [result, tableaudemotA1])
 
-  useEffect(() => {
-    if (inputToFind == "" || randomWord == undefined) return;
+  const validateInput = (value: string, target: RandomWord) => {
+    if (value == "" || randomWord == undefined) return;
+
+    value = value.toLocaleLowerCase();
+    let word_fr = randomWord.word_fr.toLowerCase();
 
     //On vérifie si le mot correspond au mot à trouver 
-    if (inputToFind.toLocaleLowerCase() == randomWord.word_fr.toLocaleLowerCase()){
+    if (value == word_fr){
       
       //Si c'est le cas alors on valide le result et on passe à true, on vide le champ et on met un message de félicitation
       setResult(true);
       setInputToFind("");
-      setMessageRes("Bravo !")
-    }else if (inputToFind.toLocaleLowerCase().includes(randomWord.word_fr.toLocaleLowerCase().slice(0, randomWord.word_fr.length - 2))){
+      setMessageRes("Good !")
+    }else if (isCloseMatch(value, word_fr)){
       //Si il ne reste plus que deux lettres à deviner alors on affiche un message "on est proche"
-      setMessageRes("On est proche !");
+      setMessageRes("You are almost !");
 
-      if (inputToFind.toLocaleLowerCase().split('').sort().join('') == randomWord.word_fr.toLocaleLowerCase().split('').sort().join('')){
-        setMessageRes(messageRes + " Mais il y a une petite erreur !")
+      if (isAnagram(value, word_fr)){
+        setMessageRes(messageRes + " But they have a little mistake !")
       }
-    }else if (randomWord.equivalents.includes(inputToFind.toLocaleLowerCase())){
-      setMessageRes("On a trouvé un mot équivalent, le bon mot était : " + randomWord.word_fr)
+    }else if (randomWord.equivalents.includes(value)){
+      setMessageRes("It is another word, the good answer was : " + word_fr)
       setResult(true);
       setInputToFind("");
-    }else if (inputToFind.toLocaleLowerCase().split('').sort().join('') == randomWord.word_fr.toLocaleLowerCase().split('').sort().join('')){
-      setMessageRes("Ah ! Pas loin, tu peux le faire !")
+    }else if (isAnagram(value, word_fr)){
+      setMessageRes("Ah ! You are near, you can do it !")
     }else {
       setMessageRes("");
     }
-  }, [inputToFind])
+  }
+
+  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+
+    setInputToFind(val);
+
+    if (randomWord){
+      validateInput(val, randomWord);
+    }
+  }
 
   // GESTION DU LOADING
   // Si le tableau est null OU que le mot n'est pas encore choisi
@@ -101,7 +134,7 @@ export default function TypeAndFind() {
           <input
             type="text"
             value={inputToFind}
-            onChange={(e) => setInputToFind(e.target.value)}
+            onChange={handleChangeInput}
             placeholder="Tapez ici..."
             autoFocus
             spellCheck="false"
