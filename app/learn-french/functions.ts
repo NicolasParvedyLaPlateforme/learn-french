@@ -14,3 +14,18 @@ export const isCloseMatch = (input: string, target: string) => {
   const root = normalize(target).slice(0, -2);
   return normalize(input).includes(root);
 };
+
+// Helper pour les couleurs de message
+export const getMessageColor = (status: string) => {
+  switch (status) {
+    case 'success': return 'text-green-600';
+    case 'equivalent': return 'text-blue-600';
+    case 'close': return 'text-orange-500 animate-pulse'; // ou ta classe warning
+    default: return 'text-muted-foreground';
+  }
+};
+
+// NOUVELLE FONCTION : Retire les accents (ex: "père" -> "pere")
+export const removeAccents = (str: string) => {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}

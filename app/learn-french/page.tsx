@@ -1,10 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { getRandomInt } from '@/tools/math';
-import { isAnagram, isCloseMatch, normalize } from './functions';
+import { isAnagram, isCloseMatch, normalize, getMessageColor, removeAccents } from './functions';
 import Header from './components/Header';
 import PromptTranslate from './components/PromptTranslate';
 import { useCallback } from 'react';
+import WordInput from './components/WordInput';
 
 interface RandomWord {
   id: number,
@@ -67,6 +68,16 @@ export default function TypeAndFind() {
       handleSuccess("Good !");
       return;
     }
+
+    // --- NOUVEAU BLOC : Vérification des accents ---
+    // On compare les versions sans accents. Si elles sont égales, c'est une faute d'accent.
+    // Puisque l'étape 1 a échoué, on sait déjà que les mots ne sont pas strictement identiques.
+    if (val === removeAccents(word_fr)) {
+      setMessage("Be careful to the accents !"); // ou "Mind the accents!"
+      setStatus('close'); // On utilise la couleur orange/warning
+      return; // On arrête là, pas besoin de vérifier les anagrammes
+    }
+    // -----------------------------------------------
 
     // 2. Synonyme / Équivalent
     if (target.equivalents.some(eq => normalize(eq) === val)) {
@@ -132,16 +143,6 @@ export default function TypeAndFind() {
     );
   }
 
-  // Helper pour les couleurs de message
-  const getMessageColor = () => {
-    switch (status) {
-      case 'success': return 'text-green-600';
-      case 'equivalent': return 'text-blue-600';
-      case 'close': return 'text-orange-500 animate-pulse'; // ou ta classe warning
-      default: return 'text-muted-foreground';
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background transition-colors duration-300">
 
@@ -155,33 +156,14 @@ export default function TypeAndFind() {
         <PromptTranslate word_en={currentWord.word_en} />
 
         {/* Zone de saisie (Input) */}
-        <div className="w-full group">
-          <input
-            type="text"
-            value={input}
-            onChange={handleChangeInput}
-            placeholder="Tapez ici..."
-            autoFocus
-            spellCheck="false"
-            className={`
-              w-full 
-              bg-muted/50 hover:bg-muted/80 focus:bg-background
-              text-foreground placeholder:text-muted-foreground/50
-              border-2 rounded-xl py-4 px-6 
-              text-center text-2xl font-medium outline-none 
-              transition-all duration-200 
-              shadow-sm focus:shadow-lg
-              ${status === 'success' ? 'border-green-500' : 'border-transparent focus:border-primary'}
-            `}
-          />
-        </div>
+        <WordInput value={input} onChange={handleChangeInput} status={status} />
 
         {/* Zone de Feedback (Feedback Slot) */}
         {/* h-8 permet de réserver la place pour éviter que le layout ne saute quand le message apparaît */}
         <div className="h-8 mt-4 flex items-center justify-center w-full">
           {/* Exemple de structure pour le message (vide par défaut) */}
           {/* Tu pourras conditionner la classe (text-warning, text-error) selon la proximité */}
-          <p className={`text-sm font-semibold transition-all duration-300 ${getMessageColor()}`}>
+          <p className={`text-1xl font-semibold transition-all duration-300 ${getMessageColor(status)}`}>
             {/* Insère ton message de proximité ici, ex: "Tu chauffes..." */}
             {message}
           </p>
